@@ -1,0 +1,80 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: white;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90vh;    
+}
+
+.box-1 {
+    background: #f0f0f0; 
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+    border-radius: 20px;
+    width: 300px; 
+    border: 1px solid #ccc; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    text-align: center;
+}
+
+.button-container {
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+}
+
+.field {
+    display: flex;
+    justify-content: center; 
+}
+
+.btn {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%; 
+    text-align: center;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+dialog {
+    border: none; 
+    border-radius: 10px; 
+    padding: 20px; 
+    width: 300px; 
+    border: none; 
+    justify-content: center; 
+    align-items: center; 
+    margin: auto; 
+}
+
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5); /* Dark backdrop */
+}
+.schedule {
+    text-align: center;
+    line-height: 1.5;
+}
+.current-time {
+    text-align: center;
+}
+.current-date {
+    text-align: center;
+}
