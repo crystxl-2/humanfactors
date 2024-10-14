@@ -16,13 +16,14 @@ if (isset($_SESSION['id']) && isset($_SESSION['username'])) {
     <body>
         <div class="container" id="container">  
             <div class="box-1">
-                <h1>Hello, <?php echo $_SESSION['username']; ?></h1>
-                <p>Welcome Back, <b><?php echo $_SESSION['username']; ?></b>!</p>
+                <h1>Hello, <?php echo htmlspecialchars($_SESSION['username']); ?></h1>
+                <p>Welcome Back, <b><?php echo htmlspecialchars($_SESSION['username']); ?></b>!</p>
 
                 <h1 id="current-time" class="current-time"></h1>
                 <h1 id="current-date" class="current-date"></h1>
 
-                <!-- Show current Date and Time -->
+                <!-- js to Show current Date and Time -->
+                
                 <script>
                     function updateDateTime() {
                         const timeElement = document.getElementById("current-time");
@@ -41,7 +42,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['username'])) {
                     <p><b>0800 to 1600</b></p>
                 </div>
 
-                <!-- Button Classes -->
+                <!-- Button Classes  -->
                 <div class="button-container">
                     <div class="field">
                         <input type="button" class="btn" id="shift-start-btn" value="Shift Start" required>
@@ -59,9 +60,12 @@ if (isset($_SESSION['id']) && isset($_SESSION['username'])) {
                     </div>
                     
                     <form action="dashboard.php" method="POST">
-                    <div class="field">
-                        <input type="submit" class="btn" value="Access Dashboard" required>
-                    </div>
+    <div class="field">
+        <input type="submit" class="btn" value="Access Dashboard"required>
+    </div>
+</form>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

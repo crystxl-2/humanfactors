@@ -13,7 +13,6 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     $username = validate($_POST['username']);
     $password = validate($_POST['password']);
 
-    // This checks for empty fields
     if (empty($username)) {
         header("Location: index.php?error=Username is required");
         exit();
@@ -22,26 +21,29 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         exit();
     }
 
-    // Using prepared statements to prevent SQL injection
-    ## HAD TO GET AI FOR THIS BIT.
-    $sql = "SELECT * FROM users WHERE username=? AND password=?";
-    $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, "ss", $username, $password);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+   // Prepared statement to check username and password
+   $sql = "SELECT * FROM users WHERE username=? AND password=?";
+   $stmt = mysqli_prepare($conn, $sql);
+   mysqli_stmt_bind_param($stmt, "ss", $username, $password);
+   mysqli_stmt_execute($stmt);
+   $result = mysqli_stmt_get_result($stmt);
 
-    if (mysqli_num_rows($result) === 1) {
-        $row = mysqli_fetch_assoc($result);
-        echo "Logged In!";
-        $_SESSION['username'] = $row['username'];
-        $_SESSION['name'] = $row['name'];
-        $_SESSION['id'] = $row['id'];
-        header("Location: home.php");
-    } else {
-        header("Location: index.php?error=Incorrect Username or Password");
-        exit();
-    }
-} else {
-    header("Location: index.php");
-    exit(); 
+   // Check if the query returns a row
+   if (mysqli_num_rows($result) === 1) {
+       $row = mysqli_fetch_assoc($result);
+       
+       // Now set session variables and redirect
+       $_SESSION['username'] = $row['username'];
+       $_SESSION['name'] = $row['first_name'];  // Make sure 'first_name' exists in the users table
+       $_SESSION['id'] = $row['user_id'];       // Make sure 'user_id' exists in the users table
+       $_SESSION['role_id'] = $row['role_id'];  // Add role_id to the session
+
+       // Redirect to home page after successful login
+       header("Location: home.php");
+       exit();
+   } else {
+       header("Location: index.php?error=Incorrect Username or Password");
+       exit();
+   }
 }
+?>

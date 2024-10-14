@@ -1,17 +1,17 @@
 <?php
 $host = "localhost";
-$dbname = "test_db";  // Name of your database
-$username = "root";   // Default XAMPP username
-$password = "";       // Default XAMPP password (usually empty)
+$dbname = "abc-company-db";  // Name of the database in PHPMySQL
+$username = "root";   
+$password = "";   
 
-// Correct order: host, username, password, dbname
+// Creates the connection
 $conn = mysqli_connect($host, $username, $password, $dbname);
 
+
+// Checks the connection
 if (!$conn) {
-    echo "Failed to connect, try again later";
-    // Optionally, you can include more details with: mysqli_connect_error()
+    die("Connection failed: " . mysqli_connect_error());
 } else {
-    echo "Connected successfully!";
+    echo "Login Sucessful!";
 }
 ?>
-
