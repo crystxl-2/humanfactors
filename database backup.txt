@@ -1,0 +1,200 @@
+-- 1. Roles Table
+CREATE TABLE roles (
+    role_id INT AUTO_INCREMENT PRIMARY KEY,
+    role_name VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- Insert roles
+INSERT INTO roles (role_name) 
+VALUES 
+    ('Administrator'),
+    ('Factory Manager'),
+    ('Production Operator'),
+    ('Auditor');
+
+-- 2. Users Table
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,  -- Optimized VARCHAR length for passwords
+    role_id INT,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE SET NULL
+);
+
+-- 3. Machines Table
+CREATE TABLE machines (
+    machine_id INT AUTO_INCREMENT PRIMARY KEY,
+    machine_name VARCHAR(100) NOT NULL,
+    machine_type VARCHAR(50),
+    status ENUM('running', 'idle', 'down') DEFAULT 'idle',  -- Status as ENUM for fixed values
+    last_maintenance DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert machines data
+INSERT INTO machines (machine_name, machine_type, status, last_maintenance, created_at)
+VALUES
+    ('CNC Machine', 'Machining', 'running', '2024-09-15', '2020-05-12'),
+    ('3D Printer', 'Additive Manufacturing', 'running', '2024-08-25', '2022-08-17'),
+    ('Industrial Robot', 'Robotics', 'maintenance', '2024-10-10', '2019-11-01'),
+    ('Automated Guided Vehicle (AGV)', 'Automation', 'running', '2024-07-05', '2021-09-03'),
+    ('Smart Conveyor System', 'Material Handling', 'running', '2024-06-22', '2020-10-12'),
+    ('IoT Sensor Hub', 'IoT', 'running', '2024-07-28', '2021-02-16'),
+    ('Predictive Maintenance System', 'Software', 'maintenance', '2024-09-10', '2021-05-19'),
+    ('Automated Assembly Line', 'Automation', 'running', '2024-08-05', '2019-08-20'),
+    ('Quality Control Scanner', 'Inspection', 'maintenance', '2024-09-22', '2022-06-11'),
+    ('Energy Management System', 'Energy Management', 'maintenance', '2024-10-01', '2020-01-14');
+
+-- 4. Machine Analytics Table
+CREATE TABLE machine_analytics (
+    machine_name VARCHAR(255),
+    temperature DECIMAL(5, 2),
+    pressure DECIMAL(5, 2),
+    vibration DECIMAL(5, 2),
+    humidity DECIMAL(5, 2),
+    power_consumption DECIMAL(10, 2),
+    operational_status VARCHAR(100),
+    error_code VARCHAR(50),
+    production_count INT,
+    maintenance_log TEXT,
+    speed DECIMAL(5, 2),
+    PRIMARY KEY (machine_name)
+);
+
+-- Insert machine analytics data
+INSERT INTO machine_analytics (machine_name, temperature, pressure, vibration, humidity, power_consumption, operational_status, error_code, production_count, maintenance_log, speed)
+VALUES
+    ('CNC Machine', 45.47, 7.69, 1.86, 33.17, 270.22, 'active', NULL, 66, NULL, 4.27),
+    ('3D Printer', 71.18, 3.16, 0.24, 36.76, 330.36, 'active', NULL, 96, NULL, 3.35),
+    ('Industrial Robot', 61.09, 6.81, 4.83, 62.59, 460.07, 'maintenance', 'E303', 73, 'Part Replacement', 3.41),
+    ('Automated Guided Vehicle (AGV)', 33.71, 4.13, 1.15, 34.09, 171.69, 'active', NULL, 99, NULL, NULL),
+    ('Smart Conveyor System', 24.48, 8.37, 0.76, 54.26, 170.14, 'active', NULL, 4, NULL, 1.11),
+    ('IoT Sensor Hub', 40.93, 4.97, 0.49, 54.51, 464.51, 'active', NULL, 21, NULL, NULL),
+    ('Predictive Maintenance System', 71.93, 5.96, 3.70, 52.04, 286.35, 'maintenance', 'E202', 77, 'Software Update', NULL),
+    ('Automated Assembly Line', 41.89, 3.85, 3.29, 66.15, 236.15, 'active', NULL, 74, NULL, NULL),
+    ('Quality Control Scanner', 74.66, 3.22, 4.27, 67.80, 139.24, 'maintenance', 'E303', 8, 'Part Replacement', NULL),
+    ('Energy Management System', 32.05, 2.72, 2.61, 69.10, 101.85, 'maintenance', 'E404', 51, 'Catastrophic failure', NULL);
+
+-- 5. Jobs Table
+CREATE TABLE jobs (
+    job_id INT AUTO_INCREMENT PRIMARY KEY,
+    job_name VARCHAR(100),
+    machine_id INT,
+    status ENUM('pending', 'in_progress', 'completed') DEFAULT 'pending',
+    assigned_operator INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (machine_id) REFERENCES machines(machine_id),
+    FOREIGN KEY (assigned_operator) REFERENCES users(user_id) ON DELETE SET NULL
+);
+
+-- 6. Tasks Table (Task notes by Production Operators)
+CREATE TABLE tasks (
+    task_id INT AUTO_INCREMENT PRIMARY KEY,
+    job_id INT,
+    machine_id INT,
+    created_by INT,
+    task_note TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (job_id) REFERENCES jobs(job_id),
+    FOREIGN KEY (machine_id) REFERENCES machines(machine_id),
+    FOREIGN KEY (created_by) REFERENCES users(user_id)
+);
+
+INSERT INTO tasks (job_id, machine_id, created_by, task_note) VALUES 
+(1, 1, 3, 'Inspect CNC Machine for accuracy and functionality.'),
+(2, 2, 3, 'Run test print on 3D Printer and check for defects.'),
+(3, 1, 3, 'Perform routine maintenance on the CNC Machine.'),
+(2, 2, 3, 'Calibrate the 3D Printer for optimal performance.'),
+(3, 3, 3, 'Monitor the Industrial Robot during production.'),
+(1, 4, 3, 'Check the Automated Guided Vehicle (AGV) for battery levels.'),
+(2, 5, 3, 'Ensure the Smart Conveyor System is operating without jams.'),
+(3, 6, 3, 'Update the IoT Sensor Hub with the latest firmware.'),
+(1, 7, 3, 'Review the logs from the Predictive Maintenance System.'),
+(2, 8, 3, 'Perform quality checks on products from the Automated Assembly Line.'),
+(3, 9, 3, 'Inspect the Quality Control Scanner for accuracy.'),
+(1, 10, 3, 'Check the Energy Management System for power efficiency.');
+
+);
+
+-- 7. Logs Table (importing historical log data)
+CREATE TABLE logs (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    machine_id INT,
+    log_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('running', 'idle', 'down'),
+    FOREIGN KEY (machine_id) REFERENCES machines(machine_id) ON DELETE CASCADE
+);
+
+-- 8. User Assignments Table
+CREATE TABLE user_assignments (
+    assignment_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    machine_id INT,
+    job_id INT,
+    assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (machine_id) REFERENCES machines(machine_id) ON DELETE CASCADE,
+    FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE
+);
+
+-- 9. Maintenance Requests Table
+CREATE TABLE maintenance_requests (
+    request_id INT AUTO_INCREMENT PRIMARY KEY,
+    machine_id INT,
+    requested_by INT,
+    request_date DATE,
+    status ENUM('pending', 'in_progress', 'completed') DEFAULT 'pending',
+    FOREIGN KEY (machine_id) REFERENCES machines(machine_id),
+    FOREIGN KEY (requested_by) REFERENCES users(user_id)
+);
+
+-- 10. Shifts Table
+CREATE TABLE shifts (
+    shift_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,                   
+    machine_id INT,                
+    job_id INT,                    
+    start_time TIMESTAMP NOT NULL, 
+    end_time TIMESTAMP NULL,       
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL,
+    FOREIGN KEY (machine_id) REFERENCES machines(machine_id) ON DELETE SET NULL,
+    FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE SET NULL
+);
+
+-- Audit Report
+CREATE TABLE audit_reports (
+    report_id INT AUTO_INCREMENT PRIMARY KEY,
+    report_name VARCHAR(255) NOT NULL,
+    generated_by INT NOT NULL,  -- Foreign key to users table
+    job_id INT,                 -- Foreign key to jobs table (optional)
+    machine_id INT,             -- Foreign key to machines table (optional)
+    status ENUM('Pending', 'Completed', 'Failed') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (generated_by) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE SET NULL,
+    FOREIGN KEY (machine_id) REFERENCES machines(machine_id) ON DELETE SET NULL
+);
+
+
+
+-- Insert Roberto Planta as Factory Worker (Production Operator)
+INSERT INTO users (username, password, first_name, last_name, role_id)
+VALUES ('roberto.planta', 'factory123', 'Roberto', 'Planta', 
+       (SELECT role_id FROM roles WHERE role_name = 'Production Operator'));
+
+-- Insert Jenny Pavlovic as Administrator
+INSERT INTO users (username, password, first_name, last_name, role_id)
+VALUES ('jenny.pavlovic', 'admin123', 'Jenny', 'Pavlovic', 
+       (SELECT role_id FROM roles WHERE role_name = 'Administrator'));
+
+
+
+-- Indexes for performance
+CREATE INDEX idx_status ON jobs (status);
+CREATE INDEX idx_username ON users (username);
