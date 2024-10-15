@@ -40,6 +40,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['username'])) {
                 <div class="schedule" id="schedule">
                     <p><b>Your schedule:</b></p>
                     <p><b>0800 to 1600</b></p>
+                <!-- I just picked 0800 to 1600 randomly -->
                 </div>
 
                 <!-- Button Classes  -->

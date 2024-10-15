@@ -4,11 +4,11 @@ $dbname = "abc-company-db";  // Name of the database in PHPMySQL
 $username = "root";   
 $password = "";   
 
-// Creates the connection
+// Creats the connection to the database
 $conn = mysqli_connect($host, $username, $password, $dbname);
 
 
-// Checks the connection
+// Verifies and checks the connection
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 } else {

@@ -28,17 +28,16 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
    mysqli_stmt_execute($stmt);
    $result = mysqli_stmt_get_result($stmt);
 
-   // Check if the query returns a row
    if (mysqli_num_rows($result) === 1) {
        $row = mysqli_fetch_assoc($result);
        
        // Now set session variables and redirect
        $_SESSION['username'] = $row['username'];
-       $_SESSION['name'] = $row['first_name'];  // Make sure 'first_name' exists in the users table
-       $_SESSION['id'] = $row['user_id'];       // Make sure 'user_id' exists in the users table
-       $_SESSION['role_id'] = $row['role_id'];  // Add role_id to the session
+       $_SESSION['name'] = $row['first_name']; 
+       $_SESSION['id'] = $row['user_id'];       
+       $_SESSION['role_id'] = $row['role_id'];  
 
-       // Redirect to home page after successful login
+
        header("Location: home.php");
        exit();
    } else {

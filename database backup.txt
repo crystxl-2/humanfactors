@@ -48,6 +48,8 @@ VALUES
     ('Quality Control Scanner', 'Inspection', 'maintenance', '2024-09-22', '2022-06-11'),
     ('Energy Management System', 'Energy Management', 'maintenance', '2024-10-01', '2020-01-14');
 
+);
+
 -- 4. Machine Analytics Table
 CREATE TABLE machine_analytics (
     machine_name VARCHAR(255),
@@ -78,17 +80,19 @@ VALUES
     ('Quality Control Scanner', 74.66, 3.22, 4.27, 67.80, 139.24, 'maintenance', 'E303', 8, 'Part Replacement', NULL),
     ('Energy Management System', 32.05, 2.72, 2.61, 69.10, 101.85, 'maintenance', 'E404', 51, 'Catastrophic failure', NULL);
 
+);
+
 -- 5. Jobs Table
 CREATE TABLE jobs (
     job_id INT AUTO_INCREMENT PRIMARY KEY,
     job_name VARCHAR(100),
     machine_id INT,
     status ENUM('pending', 'in_progress', 'completed') DEFAULT 'pending',
-    assigned_operator INT,
+    username VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (machine_id) REFERENCES machines(machine_id),
-    FOREIGN KEY (assigned_operator) REFERENCES users(user_id) ON DELETE SET NULL
+    FOREIGN KEY (username) REFERENCES users(username) ON DELETE SET NULL
 );
 
 -- 6. Tasks Table (Task notes by Production Operators)
