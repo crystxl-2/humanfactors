@@ -133,29 +133,6 @@ CREATE TABLE logs (
     FOREIGN KEY (machine_id) REFERENCES machines(machine_id) ON DELETE CASCADE
 );
 
--- 8. User Assignments Table
-CREATE TABLE user_assignments (
-    assignment_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    machine_id INT,
-    job_id INT,
-    assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (machine_id) REFERENCES machines(machine_id) ON DELETE CASCADE,
-    FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE
-);
-
--- 9. Maintenance Requests Table
-CREATE TABLE maintenance_requests (
-    request_id INT AUTO_INCREMENT PRIMARY KEY,
-    machine_id INT,
-    requested_by INT,
-    request_date DATE,
-    status ENUM('pending', 'in_progress', 'completed') DEFAULT 'pending',
-    FOREIGN KEY (machine_id) REFERENCES machines(machine_id),
-    FOREIGN KEY (requested_by) REFERENCES users(user_id)
-);
-
 -- 10. Shifts Table
 CREATE TABLE shifts (
     shift_id INT AUTO_INCREMENT PRIMARY KEY,
