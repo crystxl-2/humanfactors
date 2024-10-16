@@ -31,8 +31,8 @@ $reports = $conn->query("SELECT * FROM audit_reports ORDER BY created_at DESC");
             <div class="logo">ABC Company</div>
             <div class="nav-links">
                 <b><?php echo htmlspecialchars($_SESSION['username']); ?></b>
-                <a href="logout.php">Logout</a>
-                <a href="../login/dashboard.php">Return</a>
+                <a href="/login/logout.php">Logout</a>
+                <a href="/login/dashboard.php">Return</a>
             </div>
         </div>
     </header>

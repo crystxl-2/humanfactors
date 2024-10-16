@@ -51,8 +51,8 @@ $machines = $conn->query("SELECT * FROM machines");
             <div class="logo">ABC Company</div>
             <div class="nav-links">
                 <b><?php echo htmlspecialchars($_SESSION['username']); ?></b>
-                <a href="logout.php">Logout</a>
-                <a href="../login/dashboard.php">Return</a>
+                <a href="/login/logout.php">Logout</a>
+                <a href="/login/dashboard.php">Return</a>
             </div>
         </div>
     </header>

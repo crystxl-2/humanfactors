@@ -46,16 +46,17 @@ if (isset($_POST['create'])) {
     <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-    <header>
+<header>
         <div class="navbar">
             <div class="logo">ABC Company</div>
             <div class="nav-links">
-                <b><?php echo htmlspecialchars($_SESSION['username']); ?></b> <!-- Displaying the session username -->
-                <a href="logout.php">Logout</a>
-                <a href="../login/dashboard.php">Return</a>
+                <b><?php echo htmlspecialchars($_SESSION['username']); ?></b>
+                <a href="/login/logout.php">Logout</a>
+                <a href="/login/dashboard.php">Return</a>
             </div>
         </div>
     </header>
+
 
     <?php if ($errors): ?>
         <div class="error">
