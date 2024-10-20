@@ -3,7 +3,7 @@ session_start();
 
 // Check if role_id and username are set, if not, handle the error or redirect to login
 if (!isset($_SESSION['role_id']) || !isset($_SESSION['username'])) {
-    header("Location: login.php"); // Redirect to login if session is not set
+    header("Location: login.php"); 
     exit();
 }
 
@@ -27,11 +27,12 @@ $username = $_SESSION['username'];
         <div class="nav-links">
             <p><?php echo htmlspecialchars($username); ?></p> <!-- Displaying the session username -->
             <a href="/login/logout.php">Logout</a>
-            <a href="dashboard.php">Return</a> <!-- Return always points to dashboard.php -->
+            <a href="home.php">Return</a> <!-- Return always points to dashboard.php -->
         </div>
     </div>
 </header>
 
+<!-- This dashboard I have created is a user specific dashboard, only certain roles can see certain cards -->
 <main>
     <section class="dashboard">
         <!-- Conditionally display content based on role_id -->
@@ -58,6 +59,9 @@ $username = $_SESSION['username'];
             <div class="card">
                 <a href="worker/machines/machines.php">View Machines</a>
             </div>
+            <div class="card">
+                <a href="worker/update_machines/machine_update.php">Update Machines</a>
+        </div>
             <div class="card">
                 <a href="worker/jobs/pending_jobs.php">Pending Jobs</a>
             </div>
