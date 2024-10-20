@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 ?>
 
 <!DOCTYPE html>
@@ -13,13 +12,18 @@ session_start();
 </head>
 <body>
 <header>
-<div class="navbar">
+    <div class="navbar">
         <div class="logo">ABC Company</div>
         <div class="nav-links">
-            <p><?php echo htmlspecialchars($_SESSION['username']); ?></p>
-            <a href="/login/logout.php">Logout</a>
-            <a href="/login/dashboard.php">Return</a>
-
+            <a href="/login/worker/task/task.php">View Tasks</a>
+            <a href="/login/worker/jobs/pending_jobs.php">View Pending Jobs</a>
+            <a href="/login/worker/update_machines/machine_update.php">Update Machines</a>
+            <a href="/login/dashboard.php">Dashboard</a>
+            
+            <div class="username-logout">
+                <b><?php echo htmlspecialchars($_SESSION['username']); ?></b>
+                <a href="/login/logout.php">Logout</a>
+            </div>
         </div>
     </div>
 </header>
@@ -49,10 +53,20 @@ session_start();
         <div class="modal-content">
             <span class="close" id="closeModal">&times;</span>
             <h2>Analytics for <span id="machineName"></span></h2>
+
+            <!-- Date and time picker -->
+            <form id="analyticsForm" onsubmit="fetchFilteredAnalytics(event)">
+                <label for="timestamp">Select Date and Time:</label>
+                <input type="datetime-local" id="timestamp" name="timestamp" required>
+
+                <!-- Submit button -->
+                <button type="submit">Fetch Analytics</button>
+            </form>
+
+            <!-- Existing machine analytics data -->
             <table id="analyticsTable">
                 <thead>
                     <tr>
-                        <!-- table for machine analytics -->
                         <th>Temperature</th>
                         <th>Pressure</th>
                         <th>Vibration</th>
@@ -65,8 +79,7 @@ session_start();
                         <th>Speed</th>
                     </tr>
                 </thead>
-                <tbody id="analyticsBody">
-                </tbody>
+                <tbody id="analyticsBody"></tbody>
             </table>
         </div>
     </div>
@@ -111,25 +124,34 @@ session_start();
         }
     }
 
-    // This Function allows the modal pop up and ouputs the machine analytics data
-    async function viewAnalytics(machineName) {
+    // This Function allows the modal pop up and outputs the machine analytics data
+    function viewAnalytics(machineName) {
         // Display the machine name in the modal's header
         document.getElementById("machineName").innerText = machineName;
 
-        try {
-            // Fetch the machine analytics data for the selected machine from the server
-            const response = await fetch(`get_machine_analytics.php?name=${encodeURIComponent(machineName)}`);
+        // Show the modal
+        document.getElementById("analyticsModal").style.display = "block";
+    }
 
+    // Fetch filtered analytics data based on the machine name and selected timestamp
+    async function fetchFilteredAnalytics(event) {
+        event.preventDefault(); // Prevent form from submitting the traditional way
+
+        const machineName = document.getElementById("machineName").innerText;
+        const timestamp = document.getElementById("timestamp").value;
+
+        try {
+            // Fetch machine analytics filtered by the selected timestamp
+            const response = await fetch(`get_machine_analytics.php?name=${encodeURIComponent(machineName)}&timestamp=${encodeURIComponent(timestamp)}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok: ' + response.statusText);
             }
 
             const analytics = await response.json();
-            console.log(analytics);
             const tbody = document.getElementById("analyticsBody");
-            tbody.innerHTML = "";
+            tbody.innerHTML = ""; // Clear previous data
 
-            // Check if there are analytics data available for the machine
+            // Populate table with analytics data
             if (analytics && Object.keys(analytics).length > 0) {
                 const row = document.createElement("tr");
                 row.innerHTML = `
@@ -144,25 +166,17 @@ session_start();
                     <td>${analytics.maintenance_log}</td>
                     <td>${analytics.speed}</td>
                 `;
-
-                // Append the row to the analytics table body
                 tbody.appendChild(row);
             } else {
-
-                tbody.innerHTML = `<tr><td colspan="10">No analytics data available for this machine.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10">No analytics data available for this machine at the selected time.</td></tr>`;
             }
-
-            // Show the modal with the analytics data
-            document.getElementById("analyticsModal").style.display = "block";
         } catch (error) {
-            // Log any error that occurs during the fetching process
             console.error('Error fetching analytics:', error);
         }
     }
 
     // Event listener to close the modal when the close button is clicked
     document.getElementById("closeModal").onclick = function() {
-        // Hide the modal by setting its display property to 'none'
         document.getElementById("analyticsModal").style.display = "none";
     };
 
