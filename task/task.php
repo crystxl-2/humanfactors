@@ -1,50 +1,38 @@
 <?php
-// session start for user/role authentcation and session variable
+// session start for user/role authentication and session variable
 session_start();
 
-// checks if the user is a Production Operator (role_id == 3) (role specific)
+// checks if the user is a Production Operator (role_id == 3) (role-specific)
 if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != '3') {
-    // If the user is not logged in or not a Production Operator, redirect to login
     header("Location: login.php");
     exit(); 
 }
 
 require_once 'task_connect.php';
 
-// Initialize an array to store error messages and a variable for success messages
 $errors = [];
 $success = "";
 
 // Fetch available machines from the database to populate the machine dropdown in the form
 $machines_result = $conn->query("SELECT machine_id, machine_name FROM machines");
 
-// Check if the 'Create Task' form was submitted
 if (isset($_POST['create'])) {
-    // Get form data and set default values if fields are optional (e.g., job_id)
-    $job_id = !empty($_POST['job_id']) ? $_POST['job_id'] : null; 
     $machine_id = !empty($_POST['machine_id']) ? $_POST['machine_id'] : null;
     $task_note = $_POST['task_note']; 
-    $created_by = $_SESSION['user_id']; 
+    $created_by = $_SESSION['id']; //
 
-    // Validate input fields
     if (empty($task_note)) {
-        // If task note is empty, add an error message to the $errors array
         $errors[] = "Task Note is required.";
     } else {
         // SQL query to insert a new task into the tasks table
-        $stmt = $conn->prepare("INSERT INTO tasks (job_id, machine_id, created_by, task_note) VALUES (?, ?, ?, ?)");
-        // Bind parameters to the SQL query (iiis stands for two integers and a string)
-        $stmt->bind_param("iiis", $job_id, $machine_id, $created_by, $task_note);
+        $stmt = $conn->prepare("INSERT INTO tasks (machine_id, created_by, task_note) VALUES (?, ?, ?)");
+        $stmt->bind_param("iis", $machine_id, $created_by, $task_note);
 
-        // Execute the prepared statement
         if ($stmt->execute()) {
-            // If successful, set a success message
             $success = "Task has been created successfully.";
         } else {
-            // If an error occurs, add the error message to the $errors array
             $errors[] = "There was an error creating the task: " . $conn->error;
         }
-        // Close the prepared statement
         $stmt->close();
     }
 }
@@ -55,29 +43,29 @@ if (isset($_GET['delete'])) {
 
     // Prepare a SQL statement to delete a task based on the task ID
     $stmt = $conn->prepare("DELETE FROM tasks WHERE task_id = ?");
-    // Bind the task ID to the SQL query (i stands for integer)
     $stmt->bind_param("i", $task_id);
 
-    // Execute the deletion statement
     if ($stmt->execute()) {
-        // If successful, set a success message
         $success = "Task has been deleted successfully.";
     } else {
-       
         $errors[] = "There was an error deleting the task: " . $conn->error;
     }
-    // Close the prepared statement
     $stmt->close();
 }
 
-// Fetch all tasks from the database to display them in a table
-$sql = "SELECT * FROM tasks";
+// Fetch all tasks from the database to display them in a table, with formatted date and machine name
+// Use a JOIN to get the username from the users table based on created_by (user_id)
+$sql = "SELECT tasks.task_id, tasks.task_note, users.username as created_by, 
+        DATE_FORMAT(tasks.created_at, '%d/%m/%Y %H:%i:%s') as formatted_created_at, 
+        machines.machine_name 
+        FROM tasks 
+        JOIN users ON tasks.created_by = users.user_id 
+        JOIN machines ON tasks.machine_id = machines.machine_id";
 $result = $conn->query($sql);
 
-// this closes the database connection
+// Close the database connection
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -92,11 +80,15 @@ $conn->close();
     <div class="navbar">
         <div class="logo">ABC Company</div>
         <div class="nav-links">
-            <!-- Display the logged-in user's username from the session -->
-            <p><?php echo htmlspecialchars($_SESSION['username']); ?></p>
-            <a href="/login/logout.php">Logout</a>
-            <a href="/login/dashboard.php">Return</a>
-        </div>
+            <a href="/login/worker/machines/machines.php">View Machines</a>
+            <a href="/login/worker/update_machines/machine_update.php">Update Machines</a>
+            <a href="/login/worker/jobs/pending_jobs.php">View Pending Jobs</a>
+            <a href="/login/dashboard.php">Dashboard</a>
+
+            <div class="username-logout">
+                <b><?php echo htmlspecialchars($_SESSION['username']); ?></b>
+                <a href="/login/logout.php">Logout</a>
+            </div>
     </div>
 </header>
 
@@ -123,10 +115,8 @@ $conn->close();
     <div class="form-container">
         <form id="createTaskForm" action="" method="POST">
             <h3>Create New Task</h3>
-            <label for="job_id">Job ID (Optional):</label>
-            <input type="text" id="job_id" name="job_id" placeholder="Enter Job ID">
 
-            <label for="machine_id">Machine ID:</label>
+            <label for="machine_id">Machine</label>
             <select id="machine_id" name="machine_id">
                 <option value="">Select Machine</option>
                 <!-- Populate the machine dropdown with data fetched from the database -->
@@ -147,8 +137,7 @@ $conn->close();
         <thead>
             <tr>
                 <th>Task ID</th>
-                <th>Job ID</th>
-                <th>Machine ID</th>
+                <th>Machine Name</th>
                 <th>Task Note</th>
                 <th>Created By</th>
                 <th>Created At</th>
@@ -162,11 +151,10 @@ $conn->close();
                 while ($row = $result->fetch_assoc()) {
                     echo "<tr>";
                     echo "<td>" . $row['task_id'] . "</td>";
-                    echo "<td>" . ($row['job_id'] ? $row['job_id'] : 'N/A') . "</td>";
-                    echo "<td>" . ($row['machine_id'] ? $row['machine_id'] : 'N/A') . "</td>";
+                    echo "<td>" . htmlspecialchars($row['machine_name']) . "</td>";
                     echo "<td>" . htmlspecialchars($row['task_note']) . "</td>";
                     echo "<td>" . htmlspecialchars($row['created_by']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['created_at']) . "</td>";
+                    echo "<td>" . $row['formatted_created_at'] . "</td>";
                     echo "<td class='action-buttons'>
                             <a href='update_task.php?task_id=" . $row['task_id'] . "' class='btn'>Edit</a>
                             <a href='?delete=" . $row['task_id'] . "' class='btn delete' onclick='return confirm(\"Are you sure?\")'>Delete</a>
@@ -175,7 +163,7 @@ $conn->close();
                 }
             } else {
                 // If no tasks are found, display a message in the table
-                echo "<tr><td colspan='7'>No tasks found</td></tr>";
+                echo "<tr><td colspan='6'>No tasks found</td></tr>";
             }
             ?>
         </tbody>
