@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Check if the user is an administrator
+// Verifies if the user is an administrator
 if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != '1') {
     header("Location: login.php");
     exit();
@@ -12,7 +12,7 @@ require 'admin_conn.php';
 $errors = [];  
 $success = ""; 
 
-// Fetch all audit reports to display
+// Fetch all audit reports in the database to display
 $reports = $conn->query("SELECT * FROM audit_reports ORDER BY created_at DESC");
 
 ?>
@@ -30,9 +30,14 @@ $reports = $conn->query("SELECT * FROM audit_reports ORDER BY created_at DESC");
         <div class="navbar">
             <div class="logo">ABC Company</div>
             <div class="nav-links">
+            <a href="/login/admin/manage_users.php">View Users</a>
+            <a href="/login/admin/manage_machines.php">View Machines</a>
+            <a href="/login/admin/manage_jobs.php">View Jobs</a>
+            <a href="/login/dashboard.php">Dashboard</a>
+
+            <div class="username-logout">
                 <b><?php echo htmlspecialchars($_SESSION['username']); ?></b>
                 <a href="/login/logout.php">Logout</a>
-                <a href="/login/dashboard.php">Return</a>
             </div>
         </div>
     </header>

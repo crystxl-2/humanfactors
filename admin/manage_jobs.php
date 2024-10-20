@@ -106,11 +106,15 @@ $machines = $conn->query("SELECT * FROM machines");
         <div class="navbar">
             <div class="logo">ABC Company</div>
             <div class="nav-links">
-                <b><?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?></b>
-                <a href="logout.php">Logout</a>
-                <a href="/login/dashboard.php">Return</a>
+            <a href="/login/admin/manage_users.php">View Users</a>
+            <a href="/login/admin/manage_machines.php">View Machines</a>
+            <a href="/login/admin/audit_reports.php">View Audit Report</a>
+            <a href="/login/dashboard.php">Dashboard</a>
+
+            <div class="username-logout">
+                <b><?php echo htmlspecialchars($_SESSION['username']); ?></b>
+                <a href="/login/logout.php">Logout</a>
             </div>
-        </div>
     </header>
 
     <?php if (!empty($errors)): ?>

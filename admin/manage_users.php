@@ -50,11 +50,15 @@ if (isset($_POST['create'])) {
         <div class="navbar">
             <div class="logo">ABC Company</div>
             <div class="nav-links">
+            <a href="/login/admin/manage_machines.php">View Machines</a>
+            <a href="/login/admin/manage_jobs.php">View Jobs</a>
+            <a href="/login/admin/audit_reports.php">View Audit Report</a>
+            <a href="/login/dashboard.php">Dashboard</a>
+
+            <div class="username-logout">
                 <b><?php echo htmlspecialchars($_SESSION['username']); ?></b>
                 <a href="/login/logout.php">Logout</a>
-                <a href="/login/dashboard.php">Return</a>
             </div>
-        </div>
     </header>
 
 

@@ -25,20 +25,31 @@ header {
     justify-content: space-between;
     align-items: center;
 }
+.username-logout {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 20px; /* Space between the username and logout link */
+}
+
+.username-logout a {
+    margin-left: 10px; /* Adjust as needed */
+}
 
 .navbar .logo {
     font-size: 24px;
     margin-left: 20px;
 }
 
-.navbar .nav-links a {
+.nav-links a {
     color: white;
     text-decoration: none;
-    margin-right: 30px;        /* Space between links */
-    display: flex;
-    align-items: center;
+    margin-right: 40px; /* Increase the value to add more space */
+    display: inline-block;
 }
 
+.nav-links a:last-child {
+    margin-right: 0; /* Remove margin for the last link */
+}
 .nav-links  {
     display: flex;               /* Set as flex container */
     align-items: center;        /* Center items vertically */
@@ -130,8 +141,4 @@ footer {
 
 .submit-row button:hover {
     background-color: #1b2838;
-}
-
-h2 {
-    text-align: center;
 }
