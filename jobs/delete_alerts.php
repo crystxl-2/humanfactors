@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'report_conn.php';  // Adjust the path as necessary
+require 'alert_conn.php';  // Adjust the path as necessary
 
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");

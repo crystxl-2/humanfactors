@@ -34,14 +34,26 @@ if (isset($_POST['update'])) {
     if (empty($status)) {
         $errors[] = "Status is required to update the job.";
     } else {
-        // Update job status for this operator only
-        $stmt = $conn->prepare("UPDATE jobs SET status = ?, updated_at = NOW() WHERE job_id = ? AND username = ?");
-        $stmt->bind_param("sis", $status, $job_id, $username);
+        if ($status === "Completed") {
+            // Delete the job if the status is 'Completed'
+            $stmt = $conn->prepare("DELETE FROM jobs WHERE job_id = ? AND username = ?");
+            $stmt->bind_param("is", $job_id, $username);
 
-        if ($stmt->execute()) {
-            $success = "Job status has been updated successfully.";
+            if ($stmt->execute()) {
+                $success = "Job has been completed and deleted successfully.";
+            } else {
+                $errors[] = "There has been an error deleting the completed job: " . $conn->error;
+            }
         } else {
-            $errors[] = "There has been an error updating the job: " . $conn->error;
+            // Update job status for this operator only
+            $stmt = $conn->prepare("UPDATE jobs SET status = ?, updated_at = NOW() WHERE job_id = ? AND username = ?");
+            $stmt->bind_param("sis", $status, $job_id, $username);
+
+            if ($stmt->execute()) {
+                $success = "Job status has been updated successfully.";
+            } else {
+                $errors[] = "There has been an error updating the job: " . $conn->error;
+            }
         }
         $stmt->close();
     }
@@ -50,6 +62,7 @@ if (isset($_POST['update'])) {
 $jobs->close();
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -64,11 +77,17 @@ $conn->close();
 <div class="navbar">
         <div class="logo">ABC Company</div>
         <div class="nav-links">
-            <p><?php echo htmlspecialchars($_SESSION['username']); ?></p>
-            <a href="/login/logout.php">Logout</a>
-            <a href="/login/dashboard.php">Return</a>
-        </div>
+        <a href="/login/worker/task/task.php">View Tasks</a>
+        <a href="/login/worker/machines/machines.php">View Machines</a>
+        <a href="/login/worker/update_machines/machine_update.php">Update Machines</a>
+        <a href="/login/dashboard.php">Dashboard</a>
+
+            <div class="username-logout">
+                <b><?php echo htmlspecialchars($_SESSION['username']); ?></b>
+                <a href="/login/logout.php">Logout</a>
+            </div>
     </div>
+</header>
 </header>
 
 <main>
